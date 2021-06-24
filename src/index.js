@@ -1,9 +1,12 @@
 "use strict";
+import { config } from "./config.js";
+
+const key = config.MY_API_TOKEN;
 
 async function getWeather() {
   try {
     const data = await fetch(
-      "http://api.openweathermap.org/data/2.5/weather?q=San Jose&appid=6338a3cdeb83d79432461f4b42b4df2c",
+      `http://api.openweathermap.org/data/2.5/weather?q=San Jose&appid=${key}`,
       { mode: "cors" }
     );
     const dataObj = await data.json();
