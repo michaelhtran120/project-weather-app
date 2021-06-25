@@ -25,7 +25,7 @@ const searchFn = () => {
 const getCurrentWeather = async function (location) {
   try {
     const data = await fetch(
-      `http://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=${key}`,
+      `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=${key}`,
       { mode: "cors" }
     );
     const dataObj = await data.json();
@@ -75,7 +75,7 @@ const getForecast = async function (location) {
   );
   try {
     const data = await fetch(
-      `http://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=${key}`,
+      `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=${key}`,
       { mode: "cors" }
     );
     const dataObj = await data.json();
