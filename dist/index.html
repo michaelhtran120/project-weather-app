@@ -19,42 +19,50 @@
       <div id="search-bar">
         <input id ="search-input" type="text" placeholder="city,state,country"/>
         <button class="material-icons-outlined" id="search-btn">search</button>
-      </div>
+    </div>
+
     </div>
     <div id="today-area">
       <div id="today-left-card">
-        <h2 id="location">San Jose</h2>
-        <h2 id="weather">Cloudy</h2>
-        <p id="today-date">Thursday, June 24th, 2021</p>
-        <h2 id="temperature">50°F</h2>
+        <h2 id="location"></h2>
+        <h2 id="weather"></h2>
+        <p id="today-date"></p>
+        <h2 id="temperature"></h2>
         <div id='today-temp-range'>
           <h3>Low: <span id="temp-low"></span></h2>
           <h3>High: <span id="temp-high"></span></h2>
         </div>
-        <img style="width: 150px; height: 150px" src="img/cloud.png" />
+        <img id='today-img' style="width: 150px; height: 150px" src='' />
         <p></p>
       </div>
       <div id="today-center-card">
-        <h3> 7 day Forecast</h3>
+        <div id='forecast-btn-container'>
+          <a id='daily-btn'>7 Day</a>
+          <a id='hourly-btn'>Hourly</a>
+        </div>
+        <h3 id='forecast-title'> 7 day Forecast</h3>
       </div>
       <div id="today-right-card">
         <div>
-          <img style ='width: 75px; height: 75px'src=img/feels-like.png>
+          <img style ='width: 60px; height: 60px'src=img/feels-like.png>
           <p>Feels Like: <br><span id="today-feel-like"></span> </p>
         </div>
         <div>
-          <img style ='width: 75px; height: 75px'src=img/humidity.png>
+          <img style ='width: 60px; height: 60px'src=img/humidity.png>
           <p>Humidity:<br><span  id='today-humidity'></span></p>
         </div>
         <div>
-          <img style ='width: 75px; height: 75px'src=img/wind.png>
+          <img style ='width: 60px; height: 60px'src=img/wind.png>
           <p>Wind Speed:<br> <span id='today-wind-speed'></span></p>
         </div>
       </div>
     </div>
     <div id="forecast-container">
-
       <div id='forecast-area'>
+        <div  class='daily-forecast-container'>
+        </div>
+        <div  class='hourly-forecast-container hidden'>
+        </div>
       </div>
     </div>
   </body>
