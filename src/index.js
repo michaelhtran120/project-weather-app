@@ -37,6 +37,7 @@ const getCurrentWeather = async function (location) {
     const windSpeed = wind.speed;
     const country = sys.country;
     const src = getSrc(currentWeather);
+    const cTemp = Math.trunc(celsiusConversion(temp));
 
     // HTML Elements
     const locationEl = document.querySelector("#location");
@@ -49,18 +50,42 @@ const getCurrentWeather = async function (location) {
     const humidityEL = document.querySelector("#today-humidity");
     const windSpeedEl = document.querySelector("#today-wind-speed");
     const imgEl = document.querySelector("#today-img");
+    const celsiusConvBtn = document.querySelector("#fToc-btn");
+    const farenheitConvBtn = document.querySelector("#cTof-btn");
 
     // Setting values for HTML Elements
     locationEl.textContent = `${name}, ${country}`;
     weatherEl.textContent = currentWeather;
     dateEl.textContent = todayDate;
-    tempEl.textContent = `${Math.trunc(temp)}°F`;
-    tempLowEl.textContent = `${Math.trunc(temp_min)}°F`;
-    tempHighEl.textContent = `${Math.trunc(temp_max)}°F`;
-    feelLikeEl.textContent = `${Math.trunc(feels_like)}°F`;
     humidityEL.textContent = `${humidity}%`;
     windSpeedEl.textContent = `${windSpeed} mph`;
     imgEl.setAttribute("src", `${src}`);
+    if (celsiusConvBtn.classList.contains("active-temp")) {
+      tempEl.textContent = `${Math.trunc(celsiusConversion(temp))}°C`;
+      tempLowEl.textContent = `${Math.trunc(celsiusConversion(temp_min))}°C`;
+      tempHighEl.textContent = `${Math.trunc(celsiusConversion(temp_max))}°C`;
+      feelLikeEl.textContent = `${Math.trunc(celsiusConversion(feels_like))}°C`;
+    } else {
+      tempEl.textContent = `${Math.trunc(temp)}°F`;
+      tempLowEl.textContent = `${Math.trunc(temp_min)}°F`;
+      tempHighEl.textContent = `${Math.trunc(temp_max)}°F`;
+      feelLikeEl.textContent = `${Math.trunc(feels_like)}°F`;
+    }
+
+    // Button event listener
+    celsiusConvBtn.addEventListener("click", (e) => {
+      tempEl.textContent = `${cTemp}°C`;
+      tempLowEl.textContent = `${Math.trunc(celsiusConversion(temp_min))}°C`;
+      tempHighEl.textContent = `${Math.trunc(celsiusConversion(temp_max))}°C`;
+      feelLikeEl.textContent = `${Math.trunc(celsiusConversion(feels_like))}°C`;
+    });
+
+    farenheitConvBtn.addEventListener("click", () => {
+      tempEl.textContent = `${Math.trunc(temp)}°F`;
+      tempLowEl.textContent = `${Math.trunc(temp_min)}°F`;
+      tempHighEl.textContent = `${Math.trunc(temp_max)}°F`;
+      feelLikeEl.textContent = `${Math.trunc(feels_like)}°F`;
+    });
   } catch (err) {
     console.error("error:", err);
   }
@@ -72,6 +97,9 @@ const getForecast = async function (location) {
   const hourlyForecastDiv = document.querySelector(
     ".hourly-forecast-container"
   );
+  const celsiusConvBtn = document.querySelector("#fToc-btn");
+  const farenheitConvBtn = document.querySelector("#cTof-btn");
+
   try {
     const data = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=${key}`
@@ -85,29 +113,47 @@ const getForecast = async function (location) {
 
     //// daily forecast ////
     const dailyForecastData = fulldataObj.daily.slice(1);
+    console.log(dailyForecastData);
     dailyForecastData.forEach((day) => {
       const {
         dt,
         temp: { min: minTemp, max: maxTemp },
         weather,
       } = day;
-
       let date = new Date(dt * 1000).getDay();
       date = convertDay(date);
-
       const dailyWeather = weather[0].main;
-
       const src = getSrc(dailyWeather);
 
-      dailyForecastDiv.insertAdjacentHTML(
-        "beforeend",
-        `<div>
-        <p>${date}</p>
-        <p>H: ${Math.trunc(maxTemp)}°F</p>
-        <p>L: ${Math.trunc(minTemp)}°F</p>
-        <img class='daily-img' style='width: 50px; height: 50px' src='${src}'>
-       </div>`
-      );
+      // Element creation
+      const dailyDiv = document.createElement("div");
+      const dateP = document.createElement("p");
+      const maxTempP = document.createElement("p");
+      const minTempP = document.createElement("p");
+      const dailyImg = document.createElement("img");
+
+      //Setting element values and style
+      dateP.textContent = `${date}`;
+      dailyImg.setAttribute("src", `${src}`);
+      dailyImg.style.width = "50px";
+      dailyImg.style.height = "50px";
+      dailyImg.classList = "daily-img";
+      maxTempP.classList = "maxTempP";
+      minTempP.classList = "minTempP";
+
+      if (celsiusConvBtn.classList.contains("active-temp")) {
+        maxTempP.textContent = `H: ${Math.trunc(celsiusConversion(maxTemp))}°C`;
+        minTempP.textContent = `L: ${Math.trunc(celsiusConversion(minTemp))}°C`;
+      } else {
+        maxTempP.textContent = `H: ${Math.trunc(maxTemp)}°F`;
+        minTempP.textContent = `L: ${Math.trunc(minTemp)}°F`;
+      }
+      // Appending elements
+      dailyDiv.appendChild(dateP);
+      dailyDiv.appendChild(maxTempP);
+      dailyDiv.appendChild(minTempP);
+      dailyDiv.appendChild(dailyImg);
+      dailyForecastDiv.appendChild(dailyDiv);
     });
 
     //// hourly forecast ////
@@ -115,25 +161,96 @@ const getForecast = async function (location) {
 
     hourlyForecast.forEach((arrData) => {
       const { dt, temp, weather } = arrData;
-
       let hour = new Date(dt * 1000).getHours();
       hour = convertHours(hour);
-
       const hourlyWeather = weather[0].main;
-
       const hourlyTemp = Math.trunc(temp);
-
       const src = getSrc(hourlyWeather);
 
-      hourlyForecastDiv.insertAdjacentHTML(
-        "beforeend",
-        `<div>
-          <p>${hour}</p>
-          <p>${hourlyTemp}°F</p>
-          <img class='daily-img' style='width: 50px; height: 50px' src='${src}'>
-         </div>`
-      );
+      // Element creation
+      const hourlyDiv = document.createElement("div");
+      const timeP = document.createElement("p");
+      const hourlyTempP = document.createElement("p");
+      const hourlyImg = document.createElement("img");
+
+      // Setting value and style...etc
+      timeP.textContent = `${hour}`;
+      hourlyTempP.textContent = `${hourlyTemp}°F`;
+      hourlyImg.setAttribute("src", `${src}`);
+      hourlyImg.style.width = "50px";
+      hourlyImg.style.height = "50px";
+      hourlyTempP.classList = "hourlyTemp";
+
+      if (celsiusConvBtn.classList.contains("active-temp")) {
+        hourlyTempP.textContent = `${Math.trunc(
+          celsiusConversion(hourlyTemp)
+        )}°C`;
+      } else {
+        hourlyTempP.textContent = `${hourlyTemp}°F`;
+      }
+
+      hourlyDiv.appendChild(timeP);
+      hourlyDiv.appendChild(hourlyTempP);
+      hourlyDiv.appendChild(hourlyImg);
+
+      hourlyForecastDiv.append(hourlyDiv);
     });
+
+    celsiusConvBtn.addEventListener("click", () => {
+      if (celsiusConvBtn.classList.contains("active-temp")) {
+        //do nothing
+      } else {
+        const maxTempPEl = document.querySelectorAll(".maxTempP");
+        const minTempPEl = document.querySelectorAll(".minTempP");
+        const hourlyTempPEl = document.querySelectorAll(".hourlyTemp");
+        maxTempPEl.forEach((el) => {
+          const text = el.textContent;
+          const tempNumber = Number(text.match(/[0-9]{1,2}/));
+          el.textContent = `H: ${Math.trunc(celsiusConversion(tempNumber))}°C`;
+        });
+        minTempPEl.forEach((el) => {
+          const text = el.textContent;
+          const tempNumber = Number(text.match(/[0-9]{1,2}/));
+          el.textContent = `L: ${Math.trunc(celsiusConversion(tempNumber))}°C`;
+        });
+        hourlyTempPEl.forEach((el) => {
+          const text = el.textContent;
+          const tempNumber = Number(text.match(/[0-9]{1,2}/));
+          el.textContent = `${Math.trunc(celsiusConversion(tempNumber))}°C`;
+        });
+
+        celsiusConvBtn.classList.add("active-temp");
+        farenheitConvBtn.classList.remove("active-temp");
+      }
+    });
+
+    farenheitConvBtn.addEventListener("click", () => {
+      if (farenheitConvBtn.classList.contains("active-temp")) {
+        //do nothing
+      } else {
+        const maxTempPEl = document.querySelectorAll(".maxTempP");
+        const minTempPEl = document.querySelectorAll(".minTempP");
+        const hourlyTempPEl = document.querySelectorAll(".hourlyTemp");
+
+        for (let i = 0; i < dailyForecastData.length; i++) {
+          const {
+            temp: { min: minTemp, max: maxTemp },
+          } = dailyForecastData[i];
+          maxTempPEl[i].textContent = `H: ${Math.trunc(maxTemp)}°F`;
+          minTempPEl[i].textContent = `L: ${Math.trunc(minTemp)}•F`;
+        }
+
+        for (let i = 0; i < hourlyForecast.length; i++) {
+          const { temp } = hourlyForecast[i];
+          hourlyTempPEl[i].textContent = `${Math.trunc(temp)}°F`;
+        }
+
+        celsiusConvBtn.classList.remove("active-temp");
+        farenheitConvBtn.classList.add("active-temp");
+      }
+    });
+
+    //
   } catch (err) {
     console.error("error", err);
   }
@@ -200,6 +317,10 @@ const getSrc = function (weather, src) {
   }
 };
 
+const celsiusConversion = function (temp) {
+  return (temp - 32) * (5 / 9);
+};
+
 searchBtn.addEventListener("click", (e) => {
   e.preventDefault();
   searchFn();
@@ -229,3 +350,5 @@ hourlyBtn.addEventListener("click", () => {
 
 getCurrentWeather("San Jose,US-CA");
 getForecast("San Jose,US-CA");
+
+console.log(celsiusConversion(78.37));
