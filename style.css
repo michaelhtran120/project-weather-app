@@ -17,6 +17,7 @@ body {
 /* // // // search-styling // // // */
 
 #search-bar-area {
+  display: flex;
   width: 100%;
   height: 10vh;
 }
@@ -62,6 +63,23 @@ body {
   content: "";
   clear: both;
   display: table;
+}
+
+#temp-unit-btn-container {
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  font-size: 24px;
+}
+.active-temp {
+  border: 1px solid white;
+  border-radius: 4px;
+}
+
+#fToc-btn,
+#cTof-btn {
+  padding: 8px;
+  cursor: pointer;
 }
 
 /* // // // daily-styling // // // */
