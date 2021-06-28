@@ -113,7 +113,6 @@ const getForecast = async function (location) {
 
     //// daily forecast ////
     const dailyForecastData = fulldataObj.daily.slice(1);
-    console.log(dailyForecastData);
     dailyForecastData.forEach((day) => {
       const {
         dt,
@@ -350,5 +349,3 @@ hourlyBtn.addEventListener("click", () => {
 
 getCurrentWeather("San Jose,US-CA");
 getForecast("San Jose,US-CA");
-
-console.log(celsiusConversion(78.37));
